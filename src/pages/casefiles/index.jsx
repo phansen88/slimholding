@@ -1,50 +1,84 @@
+/* eslint-disable no-else-return */
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  NavLink,
+  Outlet,
+} from 'react-router-dom';
 import { useEffect, useState } from 'react';
-/*
-import { Fragment } from 'react';
-import { Popover, Transition } from '@headlessui/react';
-import { MenuIcon, XIcon } from '@heroicons/react/outline';
-*/
+import * as moment from 'moment';
+/* This example requires Tailwind CSS v2.0+ */
 
-function isActive(val) {
-  return !!Number(val);
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+function getStatus(value) {
+  if (value === 0) {
+    return {
+      label: 'new',
+      classes: 'bg-green-100 text-green-800',
+    };
+  } else if (value === 1) {
+    return {
+      label: 'pending',
+      classes: 'bg-gray-100 text-green-800',
+    };
+  } else if (value === 2) {
+    return {
+      label: 'rejected',
+      classes: 'bg-yellow-100 text-yellow-800',
+    };
+  } else if (value === 3) {
+    return {
+      label: 'deleted',
+      classes: 'bg-red-100 text-red-600',
+    };
+  } else if (value === 4) {
+    return {
+      label: 'signed',
+      classes: 'bg-green-100 text-green-600',
+    };
+  } else if (value === 5) {
+    return {
+      label: 'completed',
+      classes: 'bg-green-100 text-green-800',
+    };
+  } else if (value === 6) {
+    return {
+      label: 'failed',
+      classes: 'bg-red-100 text-red-600',
+    };
+  }
+  return '';
 }
 
-function Homepage() {
-  const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
+export default function CaseFiles() {
+  const [caseFiles, setCaseFiles] = useState([]);
 
   useEffect(() => {
-    const loadData = async () => {
-      // Till the data is fetch using API
-      // the Loading page will show.
-      setLoading(true);
-
+    const getCaseFiles = async () => {
       // Await make wait until that
       // promise settles and return its reult
-      const response = await fetch('http://localhost:5000/home', {
+      const response = await fetch('http://localhost:5000/casefiles', {
         mode: 'cors',
       });
       const data = await response.json();
 
+      console.log(data);
       // After fetching data stored it in posts state.
-      setUsers(data);
-
-      // Closed the loading page
-      setLoading(false);
+      setCaseFiles(data);
     };
 
     // Call the function
-    loadData();
+    getCaseFiles();
   }, []);
-
   return (
-    <div className="max-w-7xl mx-auto">
+    <>
       <div className="flex flex-col">
-        <div className="py-2 align-middle inline-block lg:w-full">
-          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            {loading ? (
-              <div className="simple-loader" />
-            ) : (
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -52,13 +86,13 @@ function Homepage() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Name
+                      Title
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Title
+                      Created / Sensitive
                     </th>
                     <th
                       scope="col"
@@ -70,7 +104,7 @@ function Homepage() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Role
+                      Completed
                     </th>
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Edit</span>
@@ -78,53 +112,55 @@ function Homepage() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user.id}>
+                  {caseFiles.map((caseFile) => (
+                    <tr key={caseFile.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="flex-shrink-0 h-10 w-10">
                             <img
                               className="h-10 w-10 rounded-full"
+                              src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
                               alt=""
-                              src={user.photo}
                             />
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-gray-900">
-                              {user.full_name}
+                              {caseFile.title}
                             </div>
                             <div className="text-sm text-gray-500">
-                              {user.email}
+                              {caseFile.id}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {user.user_name}
+                          ABC {caseFile.sensitiveData ? 'Sensitive' : ''}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Department of Justice
+                          {caseFile.created !== undefined
+                            ? moment.unix(caseFile.created).toISOString()
+                            : ''}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={
-                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' +
-                            (isActive(user.active)
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800')
-                          }
+                          className={classNames(
+                            getStatus(caseFile.status).classes,
+                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
+                          )}
                         >
-                          {isActive(user.active) ? 'Online' : 'Offline'}
+                          {getStatus(caseFile.status).label}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.role}
+                        {caseFile.completed !== undefined
+                          ? moment.unix(caseFile.completed).toISOString()
+                          : ''}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a
-                          href="/home"
+                          href="/"
                           className="text-indigo-600 hover:text-indigo-900"
                         >
                           Edit
@@ -134,12 +170,11 @@ function Homepage() {
                   ))}
                 </tbody>
               </table>
-            )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Outlet />
+    </>
   );
 }
-
-export default Homepage;

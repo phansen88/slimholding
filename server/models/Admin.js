@@ -14,29 +14,28 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-async function getUsers() {
+async function getDictionary() {
   let client;
   try {
     client = await pool.connect();
-    const res = await client.query('SELECT * FROM db1.users ORDER BY uid ASC');
-    return res.rows;
-  } catch (err) {
-    console.log(err);
-    throw err;
-  } finally {
-    client.release();
-  }
-}
-
-async function createUser(data) {
-  let client;
-  try {
-    client = await pool.connect();
-    const res = await client.query(
-      'INSERT INTO db1.users (first_name, last_name, active, title, role, email) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      ['John', 'Wayne', '0', 'Developer', 'Fastests Man', 'john@example.com']
+    const data = await client.query(
+      `select table_schema,
+      table_name,
+      ordinal_position as position,
+      column_name,
+      data_type,
+      case when character_maximum_length is not null
+           then character_maximum_length
+           else numeric_precision end as max_length,
+      is_nullable,
+      column_default as default_value
+from information_schema.columns
+where table_schema not in ('information_schema', 'pg_catalog')
+order by table_schema, 
+        table_name,
+        ordinal_position;`
     );
-    return res;
+    return data.rows;
   } catch (err) {
     console.log(err);
     throw err;
@@ -46,6 +45,5 @@ async function createUser(data) {
 }
 
 module.exports = {
-  getUsers,
-  createUser,
+  getDictionary,
 };

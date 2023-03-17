@@ -1,35 +1,46 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": [
-        "eslint-config-airbnb",
-        "airbnb",
-        "plugin:prettier/recommended",
-        "plugin:react/recommended",
-        "plugin:react-hooks/recommended"
-    ],
-    "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": [
-        "react"
-    ],
-    "rules": {
-        "react/react-in-jsx-scope": 0,
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-        "no-unused-vars": "warn",
-        "no-console": "off",
-        "func-names": "off",
-        "no-process-exit": "off",
-        "prefer-template": "warn",
-        "no-useless-concat":"warn",
-        "object-shorthand": "off",
-        "class-methods-use-this": "off"
-    }
+  "env": {
+      "browser": true,
+      "es2021": true
+  },
+  "extends": [
+      "eslint-config-airbnb",
+      "airbnb",
+      "airbnb/hooks",
+      "plugin:prettier/recommended",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended"
+  ],
+  "parserOptions": {
+      "ecmaFeatures": {
+          "jsx": true
+      },
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+  },
+  "plugins": [    
+      "react"
+  ],
+  "rules": {
+      "react/react-in-jsx-scope": 0,
+      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "func-names": "off",
+      "no-process-exit": "off",
+      "prefer-template": "warn",
+      "no-useless-concat":"warn",
+      "object-shorthand": "off",
+      "class-methods-use-this": "off",
+      "jsx-a11y/label-has-associated-control": ["error", {
+          "required": {
+            "some": ["nesting", "id"]
+          }
+        }],
+        "jsx-a11y/label-has-for": ["error", {
+          "required": {
+            "some": ["nesting", "id"]
+          }
+        }]
+  }
 }
